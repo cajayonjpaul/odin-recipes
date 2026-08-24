@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kenny Rogers Sales Portal</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f6f8;
+      color: #333;
+    }
+
+    /* HEADER */
+    header {
+      background: #b5121b;
+      color: white;
+      padding: 18px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 24px;
+    }
+
+    header span {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1300px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    /* FILTERS */
+    .filters {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .filters h2 {
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .filter-group label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .filter-group input,
+    .filter-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .buttons {
+      margin-top: 15px;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-filter {
+      background: #b5121b;
+      color: white;
+    }
+
+    .btn-reset {
+      background: #777;
+      color: white;
+      margin-left: 8px;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    /* DASHBOARD CARDS */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card-title {
+      color: #777;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .card-value {
+      font-size: 27px;
+      font-weight: bold;
+      color: #b5121b;
+    }
+
+    /* TABLE */
+    .table-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+
+    .table-container h2 {
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #b5121b;
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    tr:hover {
+      background: #fafafa;
+    }
+
+    .total-row {
+      font-weight: bold;
+      background: #f7f7f7;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 30px;
+      color: #888;
+    }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      .filter-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 15px;
+      }
+
+      header h1 {
+        font-size: 18px;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🍗 Kenny Rogers Sales Portal</h1>
+  <span>Sales Dashboard • Sample Version</span>
+</header>
+
+<div class="container">
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <h2>Sales Filters</h2>
+
+    <div class="filter-row">
+
+      <div class="filter-group">
+        <label>From Date</label>
+        <input type="date" id="fromDate">
+      </div>
+
+      <div class="filter-group">
+        <label>To Date</label>
+        <input type="date" id="toDate">
+      </div>
+
+      <div class="filter-group">
+        <label>Month</label>
+        <select id="monthFilter">
+          <option value="">All Months</option>
+          <option value="0">January</option>
+          <option value="1">February</option>
+          <option value="2">March</option>
+          <option value="3">April</option>
+          <option value="4">May</option>
+          <option value="5">June</option>
+          <option value="6">July</option>
+          <option value="7">August</option>
+          <option value="8">September</option>
+          <option value="9">October</option>
+          <option value="10">November</option>
+          <option value="11">December</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Branch</label>
+        <select id="branchFilter">
+          <option value="">All Branches</option>
+          <option value="SM North">SM North</option>
+          <option value="SM Megamall">SM Megamall</option>
+          <option value="Robinsons Manila">Robinsons Manila</option>
+          <option value="Greenbelt">Greenbelt</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="buttons">
+      <button class="btn-filter" onclick="applyFilters()">
+        Apply Filter
+      </button>
+
+      <button class="btn-reset" onclick="resetFilters()">
+        Reset
+      </button>
+    </div>
+  </div>
+
+
+  <!-- DASHBOARD -->
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-title">Total Sales</div>
+      <div class="card-value" id="totalSales">₱0.00</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Transactions</div>
+      <div class="card-value" id="totalTransactions">0</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Average Sale</div>
+      <div class="card-value" id="averageSale">₱0.00</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Branches</div>
+      <div class="card-value" id="branchCount">0</div>
+    </div>
+
+  </div>
+
+
+  <!-- SALES TABLE -->
+  <div class="table-container">
+
+    <h2>Sales Transactions</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Branch</th>
+          <th>Transaction #</th>
+          <th>Cashier</th>
+          <th>Sales</th>
+        </tr>
+      </thead>
+
+      <tbody id="salesTable"></tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  // SAMPLE SALES DATA
+  const salesData = [
+    {
+      date: "2026-01-05",
+      branch: "SM North",
+      transaction: "KR-1001",
+      cashier: "Maria",
+      sales: 12500
+    },
+    {
+      date: "2026-01-12",
+      branch: "SM Megamall",
+      transaction: "KR-1002",
+      cashier: "John",
+      sales: 18750
+    },
+    {
+      date: "2026-02-03",
+      branch: "Greenbelt",
+      transaction: "KR-1003",
+      cashier: "Anna",
+      sales: 15300
+    },
+    {
+      date: "2026-02-18",
+      branch: "SM North",
+      transaction: "KR-1004",
+      cashier: "Mark",
+      sales: 21900
+    },
+    {
+      date: "2026-03-08",
+      branch: "Robinsons Manila",
+      transaction: "KR-1005",
+      cashier: "Peter",
+      sales: 9800
+    },
+    {
+      date: "2026-04-15",
+      branch: "SM Megamall",
+      transaction: "KR-1006",
+      cashier: "Maria",
+      sales: 24500
+    },
+    {
+      date: "2026-05-10",
+      branch: "Greenbelt",
+      transaction: "KR-1007",
+      cashier: "Anna",
+      sales: 17300
+    },
+    {
+      date: "2026-06-22",
+      branch: "SM North",
+      transaction: "KR-1008",
+      cashier: "John",
+      sales: 28900
+    },
+    {
+      date: "2026-07-05",
+      branch: "Robinsons Manila",
+      transaction: "KR-1009",
+      cashier: "Mark",
+      sales: 13500
+    },
+    {
+      date: "2026-08-12",
+      branch: "Greenbelt",
+      transaction: "KR-1010",
+      cashier: "Maria",
+      sales: 31200
+    }
+  ];
+
+
+  function formatCurrency(amount) {
+    return new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP"
+    }).format(amount);
+  }
+
+
+  function displaySales(data) {
+
+    const table = document.getElementById("salesTable");
+
+    table.innerHTML = "";
+
+    if (data.length === 0) {
+
+      table.innerHTML = `
+        <tr>
+          <td colspan="5" class="no-data">
+            No sales found.
+          </td>
+        </tr>
+      `;
+
+      updateDashboard([]);
+      return;
+    }
+
+
+    data.forEach(item => {
+
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${item.date}</td>
+        <td>${item.branch}</td>
+        <td>${item.transaction}</td>
+        <td>${item.cashier}</td>
+        <td>${formatCurrency(item.sales)}</td>
+      `;
+
+      table.appendChild(row);
+
+    });
+
+
+    updateDashboard(data);
+  }
+
+
+  function updateDashboard(data) {
+
+    const total = data.reduce(
+      (sum, item) => sum + item.sales,
+      0
+    );
+
+    const transactions = data.length;
+
+    const average = transactions > 0
+      ? total / transactions
+      : 0;
+
+    const branches = new Set(
+      data.map(item => item.branch)
+    ).size;
+
+
+    document.getElementById("totalSales").textContent =
+      formatCurrency(total);
+
+    document.getElementById("totalTransactions").textContent =
+      transactions;
+
+    document.getElementById("averageSale").textContent =
+      formatCurrency(average);
+
+    document.getElementById("branchCount").textContent =
+      branches;
+  }
+
+
+  function applyFilters() {
+
+    const fromDate =
+      document.getElementById("fromDate").value;
+
+    const toDate =
+      document.getElementById("toDate").value;
+
+    const month =
+      document.getElementById("monthFilter").value;
+
+    const branch =
+      document.getElementById("branchFilter").value;
+
+
+    const filteredData = salesData.filter(item => {
+
+      const itemDate = new Date(item.date);
+
+
+      // DATE RANGE
+      if (fromDate && item.date < fromDate) {
+        return false;
+      }
+
+      if (toDate && item.date > toDate) {
+        return false;
+      }
+
+
+      // MONTH
+      if (
+        month !== "" &&
+        itemDate.getMonth() !== Number(month)
+      ) {
+        return false;
+      }
+
+
+      // BRANCH
+      if (
+        branch !== "" &&
+        item.branch !== branch
+      ) {
+        return false;
+      }
+
+
+      return true;
+
+    });
+
+
+    displaySales(filteredData);
+  }
+
+
+  function resetFilters() {
+
+    document.getElementById("fromDate").value = "";
+    document.getElementById("toDate").value = "";
+    document.getElementById("monthFilter").value = "";
+    document.getElementById("branchFilter").value = "";
+
+    displaySales(salesData);
+  }
+
+
+  // LOAD DATA
+  displaySales(salesData);
+
+</script>
+
+</body>
+</html>

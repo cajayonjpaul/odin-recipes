@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>SM BI Portal</title>
+
+  <style>
+    :root {
+      --primary: #b5121b;
+      --primary-dark: #8f0d15;
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #20252b;
+      --muted: #737b84;
+      --border: #e5e7eb;
+      --green: #159957;
+      --orange: #f59e0b;
+      --blue: #2563eb;
+      --red: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* =========================
+       LAYOUT
+    ========================= */
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar {
+      width: 245px;
+      background: #181b20;
+      color: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      background: var(--primary);
+    }
+
+    .logo h2 {
+      font-size: 20px;
+    }
+
+    .logo small {
+      display: block;
+      font-size: 10px;
+      opacity: .8;
+      margin-top: 3px;
+    }
+
+    .menu {
+      padding: 20px 12px;
+    }
+
+    .menu-title {
+      font-size: 11px;
+      color: #8d949d;
+      text-transform: uppercase;
+      padding: 0 12px 10px;
+    }
+
+    .menu button {
+      width: 100%;
+      background: transparent;
+      border: 0;
+      color: #c9cdd2;
+      padding: 12px;
+      text-align: left;
+      border-radius: 7px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .menu button:hover,
+    .menu button.active {
+      background: #292e35;
+      color: white;
+    }
+
+    .menu button.active {
+      border-left: 3px solid var(--primary);
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main {
+      margin-left: 245px;
+      width: calc(100% - 245px);
+    }
+
+    /* =========================
+       TOP BAR
+    ========================= */
+
+    .topbar {
+      height: 72px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 28px;
+    }
+
+    .page-title h1 {
+      font-size: 22px;
+    }
+
+    .page-title p {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    /* =========================
+       CONTENT
+    ========================= */
+
+    .content {
+      padding: 25px;
+    }
+
+    /* =========================
+       FILTERS
+    ========================= */
+
+    .filters {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 22px;
+    }
+
+    .filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .filter-header h3 {
+      font-size: 15px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+
+    .filter label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .filter input,
+    .filter select {
+      width: 100%;
+      height: 38px;
+      border: 1px solid #d7dbe0;
+      border-radius: 6px;
+      padding: 0 9px;
+      background: white;
+    }
+
+    .filter-actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      border: 0;
+      padding: 9px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e9ecef;
+      color: #333;
+    }
+
+    /* =========================
+       KPI CARDS
+    ========================= */
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .kpi {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .kpi-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-title {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .kpi-icon {
+      width: 34px;
+      height: 34px;
+      background: #fff0f1;
+      color: var(--primary);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .kpi-value {
+      font-size: 27px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .kpi-change {
+      margin-top: 8px;
+      font-size: 12px;
+    }
+
+    .positive {
+      color: var(--green);
+    }
+
+    .negative {
+      color: var(--red);
+    }
+
+    /* =========================
+       CHARTS
+    ========================= */
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .grid-2-equal {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .panel-header h2 {
+      font-size: 16px;
+    }
+
+    .panel-header span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* Sales Chart */
+
+    .chart {
+      height: 270px;
+      display: flex;
+      align-items: flex-end;
+      gap: 13px;
+      border-bottom: 1px solid #ddd;
+      padding: 15px 10px 0;
+    }
+
+    .bar-container {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .bar {
+      width: 65%;
+      min-height: 5px;
+      background: linear-gradient(
+        to top,
+        var(--primary),
+        #e33a43
+      );
+      border-radius: 5px 5px 0 0;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .bar:hover {
+      background: var(--primary-dark);
+    }
+
+    .bar-label {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .bar-value {
+      position: absolute;
+      top: -18px;
+      width: 100%;
+      text-align: center;
+      font-size: 9px;
+      color: #555;
+    }
+
+    /* =========================
+       BRANCH LIST
+    ========================= */
+
+    .ranking {
+      list-style: none;
+    }
+
+    .ranking li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .ranking li:last-child {
+      border-bottom: 0;
+    }
+
+    .rank-left {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .rank-number {
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      background: #f1f3f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .branch-name {
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .branch-region {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .branch-sales {
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    /* =========================
+       TARGET
+    ========================= */
+
+    .target-item {
+      margin-bottom: 20px;
+    }
+
+    .target-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 7px;
+      font-size: 12px;
+    }
+
+    .progress {
+      height: 9px;
+      background: #e9ecef;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 20px;
+      background: var(--green);
+    }
+
+    .progress-bar.warning {
+      background: var(--orange);
+    }
+
+    .progress-bar.danger {
+      background: var(--red);
+    }
+
+    /* =========================
+       PRODUCT TABLE
+    ========================= */
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px;
+      background: #f8f9fa;
+      color: #666;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 13px 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .badge-green {
+      background: #e7f7ef;
+      color: var(--green);
+    }
+
+    .badge-red {
+      background: #fde8e8;
+      color: var(--red);
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      text-align: center;
+      color: #888;
+      font-size: 11px;
+      padding: 25px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 1100px) {
+
+      .filter-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .kpis {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid-2,
+      .grid-2-equal {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+
+      .sidebar {
+        width: 65px;
+      }
+
+      .logo {
+        padding: 0;
+        justify-content: center;
+      }
+
+      .logo h2 {
+        display: none;
+      }
+
+      .menu button {
+        text-align: center;
+        font-size: 0;
+      }
+
+      .menu button::first-letter {
+        font-size: 18px;
+      }
+
+      .main {
+        margin-left: 65px;
+        width: calc(100% - 65px);
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+
+      .content {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+  <!-- =====================================
+       SIDEBAR
+  ====================================== -->
+
+  <aside class="sidebar">
+
+    <div class="logo">
+      <div>
+        <h2>SM BI</h2>
+        <small>Business Intelligence</small>
+      </div>
+    </div>
+
+    <div class="menu">
+
+      <div class="menu-title">
+        Main Menu
+      </div>
+
+      <button class="active" onclick="showPage('dashboard', this)">
+        📊 &nbsp; Dashboard
+      </button>
+
+      <button onclick="showPage('sales', this)">
+        💰 &nbsp; Sales Analytics
+      </button>
+
+      <button onclick="showPage('branches', this)">
+        🏢 &nbsp; Branch Performance
+      </button>
+
+      <button onclick="showPage('products', this)">
+        📦 &nbsp; Product Performance
+      </button>
+
+      <br>
+
+      <div class="menu-title">
+        Reports
+      </div>
+
+      <button onclick="alert('Sample: Daily Sales Report')">
+        📅 &nbsp; Daily Report
+      </button>
+
+      <button onclick="alert('Sample: Monthly Sales Report')">
+        📈 &nbsp; Monthly Report
+      </button>
+
+      <button onclick="alert('Sample: Export functionality')">
+        📥 &nbsp; Export Data
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =====================================
+       MAIN
+  ====================================== -->
+
+  <main class="main">
+
+    <!-- TOPBAR -->
+
+    <div class="topbar">
+
+      <div class="page-title">
+        <h1>Executive Dashboard</h1>
+        <p>Sales performance overview</p>
+      </div>
+
+      <div class="user">
+        <div>
+          <strong>Admin User</strong>
+          <div style="font-size:11px;color:#888;">
+            BI Administrator
+          </div>
+        </div>
+
+        <div class="avatar">
+          A
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="content">
+
+
+      <!-- =====================================
+           FILTERS
+      ====================================== -->
+
+      <section class="filters">
+
+        <div class="filter-header">
+
+          <h3>🔎 Report Filters</h3>
+
+          <span style="font-size:11px;color:#888;">
+            Sample data
+          </span>
+
+        </div>
+
+
+        <div class="filter-grid">
+
+          <div class="filter">
+            <label>FROM DATE</label>
+            <input type="date" id="fromDate">
+          </div>
+
+          <div class="filter">
+            <label>TO DATE</label>
+            <input type="date" id="toDate">
+          </div>
+
+          <div class="filter">
+            <label>MONTH</label>
+            <select id="month">
+              <option value="">All Months</option>
+              <option value="0">January</option>
+              <option value="1">February</option>
+              <option value="2">March</option>
+              <option value="3">April</option>
+              <option value="4">May</option>
+              <option value="5">June</option>
+              <option value="6">July</option>
+              <option value="7">August</option>
+              <option value="8">September</option>
+              <option value="9">October</option>
+              <option value="10">November</option>
+              <option value="11">December</option>
+            </select>
+          </div>
+
+          <div class="filter">
+            <label>YEAR</label>
+            <select id="year">
+              <option value="">All Years</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+            </select>
+          </div>
+
+          <div class="filter">
+            <label>REGION</label>
+            <select id="region">
+              <option value="">All Regions</option>
+              <option value="NCR">NCR</option>
+              <option value="North">North</option>
+              <option value="South">South</option>
+            </select>
+          </div>
+
+          <div class="filter">
+            <label>BRANCH</label>
+            <select id="branch">
+              <option value="">All Branches</option>
+              <option value="SM North">SM North</option>
+              <option value="SM Megamall">SM Megamall</option>
+              <option value="Greenbelt">Greenbelt</option>
+              <option value="Robinsons Manila">
+                Robinsons Manila
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+
+        <div class="filter-actions">
+
+          <button class="btn btn-primary"
+                  onclick="applyFilters()">
+            Apply Filters
+          </button>
+
+          <button class="btn btn-secondary"
+                  onclick="resetFilters()">
+            Reset
+          </button>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================
+           KPI CARDS
+      ====================================== -->
+
+      <section class="kpis">
+
+        <div class="kpi">
+
+          <div class="kpi-top">
+
+            <div class="kpi-title">
+              Total Sales
+            </div>
+
+            <div class="kpi-icon">
+              ₱
+            </div>
+
+          </div>
+
+          <div class="kpi-value" id="totalSales">
+            ₱12.84M
+          </div>
+
+          <div class="kpi-change positive">
+            ▲ 8.4% vs previous period
+          </div>
+
+        </div>
+
+
+        <div class="kpi">
+
+          <div class="kpi-top">
+
+            <div class="kpi-title">
+              Transactions
+            </div>
+
+            <div class="kpi-icon">
+              #
+            </div>
+
+          </div>
+
+          <div class="kpi-value" id="transactions">
+            45,291
+          </div>
+
+          <div class="kpi-change positive">
+            ▲ 5.2% vs previous period
+          </div>
+
+        </div>
+
+
+        <div class="kpi">
+
+          <div class="kpi-top">
+
+            <div class="kpi-title">
+              Average Check
+            </div>
+
+            <div class="kpi-icon">
+              A
+            </div>
+
+          </div>
+
+          <div class="kpi-value" id="averageCheck">
+            ₱283
+          </div>
+
+          <div class="kpi-change positive">
+            ▲ 3.1% vs previous period
+          </div>
+
+        </div>
+
+
+        <div class="kpi">
+
+          <div class="kpi-top">
+
+            <div class="kpi-title">
+              Target Achievement
+            </div>
+
+            <div class="kpi-icon">
+              %
+            </div>
+
+          </div>
+
+          <div class="kpi-value" id="targetAchievement">
+            96.4%
+          </div>
+
+          <div class="kpi-change negative">
+            ▼ 1.8% vs target
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================
+           SALES TREND + BRANCH RANKING
+      ====================================== -->
+
+      <section class="grid-2">
+
+
+        <!-- SALES TREND -->
+
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <h2>Sales Trend</h2>
+
+            <span>
+              Monthly Sales
+            </span>
+
+          </div>
+
+
+          <div class="chart" id="salesChart">
+
+            <!-- Generated by JavaScript -->
+
+          </div>
+
+        </div>
+
+
+        <!-- BRANCH RANKING -->
+
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <h2>Top Branches</h2>
+
+            <span>By Sales</span>
+
+          </div>
+
+          <ul class="ranking" id="branchRanking">
+
+            <!-- Generated by JavaScript -->
+
+          </ul>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================
+           TARGET + PRODUCT PERFORMANCE
+      ====================================== -->
+
+      <section class="grid-2-equal">
+
+
+        <!-- TARGET -->
+
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <h2>Target vs Actual</h2>
+
+            <span>Current Period</span>
+
+          </div>
+
+
+          <div id="targetList">
+
+            <!-- Generated by JavaScript -->
+
+          </div>
+
+        </div>
+
+
+        <!-- PRODUCT PERFORMANCE -->
+
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <h2>Top Products</h2>
+
+            <span>By Sales</span>
+
+          </div>
+
+
+          <div class="table-wrapper">
+
+            <table>
+
+              <thead>
+
+                <tr>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Sales</th>
+                  <th>Growth</th>
+                </tr>
+
+              </thead>
+
+              <tbody id="productTable">
+
+                <!-- Generated by JavaScript -->
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================
+           BRANCH DETAIL
+      ====================================== -->
+
+      <section class="panel">
+
+        <div class="panel-header">
+
+          <h2>Branch Performance</h2>
+
+          <span>All Branches</span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Rank</th>
+                <th>Branch</th>
+                <th>Region</th>
+                <th>Sales</th>
+                <th>Transactions</th>
+                <th>Target</th>
+                <th>Achievement</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="branchTable">
+
+              <!-- Generated by JavaScript -->
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+
+      <footer>
+        SM BI Portal • Sample Prototype • Data shown is for demonstration only
+      </footer>
+
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SAMPLE DATA
+===================================================== */
+
+const salesByMonth = [
+  {
+    month: "Jan",
+    sales: 980000
+  },
+  {
+    month: "Feb",
+    sales: 1050000
+  },
+  {
+    month: "Mar",
+    sales: 1120000
+  },
+  {
+    month: "Apr",
+    sales: 1180000
+  },
+  {
+    month: "May",
+    sales: 1090000
+  },
+  {
+    month: "Jun",
+    sales: 1250000
+  },
+  {
+    month: "Jul",
+    sales: 1330000
+  },
+  {
+    month: "Aug",
+    sales: 1450000
+  }
+];
+
+
+const branches = [
+
+  {
+    name: "SM North",
+    region: "North",
+    sales: 2450000,
+    transactions: 8500,
+    target: 2500000
+  },
+
+  {
+    name: "SM Megamall",
+    region: "NCR",
+    sales: 2210000,
+    transactions: 7900,
+    target: 2300000
+  },
+
+  {
+    name: "Greenbelt",
+    region: "NCR",
+    sales: 1980000,
+    transactions: 7100,
+    target: 2000000
+  },
+
+  {
+    name: "Robinsons Manila",
+    region: "South",
+    sales: 1760000,
+    transactions: 6300,
+    target: 1900000
+  },
+
+  {
+    name: "SM Southmall",
+    region: "South",
+    sales: 1540000,
+    transactions: 5500,
+    target: 1600000
+  }
+
+];
+
+
+const products = [
+
+  {
+    name: "Roasted Chicken",
+    category: "Main Course",
+    sales: 2850000,
+    growth: 12.5
+  },
+
+  {
+    name: "Classic Burger",
+    category: "Burger",
+    sales: 1950000,
+    growth: 8.2
+  },
+
+  {
+    name: "Chicken Pasta",
+    category: "Pasta",
+    sales: 1680000,
+    growth: 6.8
+  },
+
+  {
+    name: "Caesar Salad",
+    category: "Salad",
+    sales: 1210000,
+    growth: -2.4
+  },
+
+  {
+    name: "Iced Tea",
+    category: "Beverage",
+    sales: 980000,
+    growth: 10.1
+  }
+
+];
+
+
+/* =====================================================
+   CURRENCY
+===================================================== */
+
+function currency(value) {
+
+  return new Intl.NumberFormat(
+    "en-PH",
+    {
+      style: "currency",
+      currency: "PHP",
+      maximumFractionDigits: 0
+    }
+  ).format(value);
+
+}
+
+
+/* =====================================================
+   FORMAT MILLIONS
+===================================================== */
+
+function shortCurrency(value) {
+
+  if (value >= 1000000) {
+
+    return "₱" +
+      (value / 1000000).toFixed(2) +
+      "M";
+
+  }
+
+  if (value >= 1000) {
+
+    return "₱" +
+      (value / 1000).toFixed(0) +
+      "K";
+
+  }
+
+  return currency(value);
+
+}
+
+
+/* =====================================================
+   SALES CHART
+===================================================== */
+
+function renderChart() {
+
+  const chart =
+    document.getElementById("salesChart");
+
+  chart.innerHTML = "";
+
+  const max =
+    Math.max(...salesByMonth.map(x => x.sales));
+
+
+  salesByMonth.forEach(item => {
+
+    const height =
+      (item.sales / max) * 220;
+
+
+    const container =
+      document.createElement("div");
+
+    container.className =
+      "bar-container";
+
+
+    container.innerHTML = `
+
+      <div
+        class="bar"
+        style="height:${height}px"
+        title="${currency(item.sales)}"
+      >
+
+        <div class="bar-value">
+          ${shortCurrency(item.sales)}
+        </div>
+
+      </div>
+
+      <div class="bar-label">
+        ${item.month}
+      </div>
+
+    `;
+
+
+    chart.appendChild(container);
+
+  });
+
+}
+
+
+/* =====================================================
+   BRANCH RANKING
+===================================================== */
+
+function renderBranchRanking() {
+
+  const list =
+    document.getElementById("branchRanking");
+
+  list.innerHTML = "";
+
+
+  const sorted =
+    [...branches]
+      .sort((a, b) => b.sales - a.sales)
+      .slice(0, 5);
+
+
+  sorted.forEach((branch, index) => {
+
+    const li =
+      document.createElement("li");
+
+    li.innerHTML = `
+
+      <div class="rank-left">
+
+        <div class="rank-number">
+          ${index + 1}
+        </div>
+
+        <div>
+
+          <div class="branch-name">
+            ${branch.name}
+          </div>
+
+          <div class="branch-region">
+            ${branch.region}
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="branch-sales">
+        ${shortCurrency(branch.sales)}
+      </div>
+
+    `;
+
+
+    list.appendChild(li);
+
+  });
+
+}
+
+
+/* =====================================================
+   TARGET
+===================================================== */
+
+function renderTargets() {
+
+  const container =
+    document.getElementById("targetList");
+
+  container.innerHTML = "";
+
+
+  branches.slice(0, 5).forEach(branch => {
+
+    const percentage =
+      Math.round(
+        (branch.sales / branch.target) * 100
+      );
+
+
+    let colorClass = "";
+
+    if (percentage < 90) {
+
+      colorClass = "danger";
+
+    } else if (percentage < 100) {
+
+      colorClass = "warning";
+
+    }
+
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "target-item";
+
+
+    item.innerHTML = `
+
+      <div class="target-info">
+
+        <strong>
+          ${branch.name}
+        </strong>
+
+        <span>
+          ${percentage}%
+        </span>
+
+      </div>
+
+      <div class="progress">
+
+        <div
+          class="progress-bar ${colorClass}"
+          style="width:${Math.min(percentage, 100)}%"
+        ></div>
+
+      </div>
+
+    `;
+
+
+    container.appendChild(item);
+
+  });
+
+}
+
+
+/* =====================================================
+   PRODUCT TABLE
+===================================================== */
+
+function renderProducts() {
+
+  const table =
+    document.getElementById("productTable");
+
+  table.innerHTML = "";
+
+
+  products.forEach(product => {
+
+    const row =
+      document.createElement("tr");
+
+
+    const growthClass =
+      product.growth >= 0
+        ? "badge-green"
+        : "badge-red";
+
+
+    const growthSymbol =
+      product.growth >= 0
+        ? "▲"
+        : "▼";
+
+
+    row.innerHTML = `
+
+      <td>
+        <strong>
+          ${product.name}
+        </strong>
+      </td>
+
+      <td>
+        ${product.category}
+      </td>
+
+      <td>
+        ${shortCurrency(product.sales)}
+      </td>
+
+      <td>
+
+        <span class="badge ${growthClass}">
+          ${growthSymbol}
+          ${Math.abs(product.growth)}%
+        </span>
+
+      </td>
+
+    `;
+
+
+    table.appendChild(row);
+
+  });
+
+}
+
+
+/* =====================================================
+   BRANCH TABLE
+===================================================== */
+
+function renderBranchTable() {
+
+  const table =
+    document.getElementById("branchTable");
+
+  table.innerHTML = "";
+
+
+  const sorted =
+    [...branches]
+      .sort((a, b) => b.sales - a.sales);
+
+
+  sorted.forEach((branch, index) => {
+
+    const achievement =
+      (branch.sales / branch.target) * 100;
+
+
+    const achievementClass =
+      achievement >= 100
+        ? "badge-green"
+        : achievement >= 90
+          ? "badge-green"
+          : "badge-red";
+
+
+    const row =
+      document.createElement("tr");
+
+
+    row.innerHTML = `
+
+      <td>
+        <strong>${index + 1}</strong>
+      </td>
+
+      <td>
+        <strong>${branch.name}</strong>
+      </td>
+
+      <td>
+        ${branch.region}
+      </td>
+
+      <td>
+        ${currency(branch.sales)}
+      </td>
+
+      <td>
+        ${branch.transactions.toLocaleString()}
+      </td>
+
+      <td>
+        ${currency(branch.target)}
+      </td>
+
+      <td>
+
+        <span class="badge ${achievementClass}">
+          ${achievement.toFixed(1)}%
+        </span>
+
+      </td>
+
+    `;
+
+
+    table.appendChild(row);
+
+  });
+
+}
+
+
+/* =====================================================
+   FILTERS
+===================================================== */
+
+function applyFilters() {
+
+  const month =
+    document.getElementById("month").value;
+
+  const year =
+    document.getElementById("year").value;
+
+  const region =
+    document.getElementById("region").value;
+
+  const branch =
+    document.getElementById("branch").value;
+
+
+  console.log({
+    month,
+    year,
+    region,
+    branch
+  });
+
+
+  /*
+    SAMPLE BEHAVIOR
+
+    A real version would send these filters
+    to your backend API.
+
+    Example:
+
+    GET /api/sales?
+      month=8&
+      year=2026&
+      region=NCR&
+      branch=SM%20North
+  */
+
+
+  alert(
+    "Filters applied!\n\n" +
+
+    "Month: " +
+    (month === ""
+      ? "All"
+      : document.getElementById("month")
+          .options[
+            document.getElementById("month").selectedIndex
+          ].text
+    ) +
+
+    "\nYear: " +
+    (year || "All") +
+
+    "\nRegion: " +
+    (region || "All") +
+
+    "\nBranch: " +
+    (branch || "All")
+  );
+
+}
+
+
+function resetFilters() {
+
+  document.getElementById("fromDate").value = "";
+  document.getElementById("toDate").value = "";
+  document.getElementById("month").value = "";
+  document.getElementById("year").value = "";
+  document.getElementById("region").value = "";
+  document.getElementById("branch").value = "";
+
+}
+
+
+/* =====================================================
+   MENU
+===================================================== */
+
+function showPage(page, button) {
+
+  document
+    .querySelectorAll(".menu button")
+    .forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+
+  button.classList.add("active");
+
+
+  const title =
+    document.querySelector(".page-title h1");
+
+  const subtitle =
+    document.querySelector(".page-title p");
+
+
+  if (page === "dashboard") {
+
+    title.textContent =
+      "Executive Dashboard";
+
+    subtitle.textContent =
+      "Sales performance overview";
+
+  }
+
+  else if (page === "sales") {
+
+    title.textContent =
+      "Sales Analytics";
+
+    subtitle.textContent =
+      "Detailed sales performance";
+
+  }
+
+  else if (page === "branches") {
+
+    title.textContent =
+      "Branch Performance";
+
+    subtitle.textContent =
+      "Branch-by-branch performance";
+
+  }
+
+  else if (page === "products") {
+
+    title.textContent =
+      "Product Performance";
+
+    subtitle.textContent =
+      "Product and category analytics";
+
+  }
+
+}
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+renderChart();
+renderBranchRanking();
+renderTargets();
+renderProducts();
+renderBranchTable();
+
+</script>
+
+</body>
+</html>
