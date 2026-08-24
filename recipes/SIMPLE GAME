@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catch the Coins</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #111827;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .game-wrapper {
+      width: 100%;
+      max-width: 700px;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 12px;
+      color: #facc15;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      background: #1f2937;
+      padding: 12px 18px;
+      border-radius: 10px 10px 0 0;
+      font-weight: bold;
+    }
+
+    #game {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      background:
+        linear-gradient(
+          #172554,
+          #1e3a8a 60%,
+          #075985
+        );
+      overflow: hidden;
+      border: 3px solid #374151;
+      border-top: 0;
+    }
+
+    /* Stars */
+
+    .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: white;
+      border-radius: 50%;
+      opacity: .7;
+    }
+
+    /* Player */
+
+    #player {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90px;
+      height: 30px;
+      background: #f97316;
+      border-radius: 0 0 20px 20px;
+      border: 3px solid #fed7aa;
+      box-shadow: 0 0 15px rgba(249,115,22,.5);
+    }
+
+    #player::before {
+      content: "";
+      position: absolute;
+      width: 60px;
+      height: 8px;
+      background: #fb923c;
+      top: -8px;
+      left: 12px;
+      border-radius: 8px 8px 0 0;
+    }
+
+    /* Falling objects */
+
+    .coin {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #facc15;
+      border: 3px solid #fde68a;
+      box-shadow: 0 0 15px #facc15;
+    }
+
+    .coin::after {
+      content: "₱";
+      position: absolute;
+      color: #92400e;
+      font-weight: bold;
+      left: 7px;
+      top: 3px;
+    }
+
+    .bomb {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #111;
+      border: 3px solid #4b5563;
+      box-shadow: 0 0 10px #ef4444;
+    }
+
+    .bomb::after {
+      content: "💥";
+      position: absolute;
+      font-size: 13px;
+      top: -6px;
+      right: -8px;
+    }
+
+    .controls {
+      text-align: center;
+      margin-top: 15px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    button {
+      background: #facc15;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #fde047;
+    }
+
+    #gameOver {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    #gameOver h2 {
+      font-size: 42px;
+      color: #ef4444;
+      margin-bottom: 10px;
+    }
+
+    #gameOver p {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="game-wrapper">
+
+  <h1>🪙 Catch the Coins</h1>
+
+  <div class="stats">
+    <div>
+      Score: <span id="score">0</span>
+    </div>
+
+    <div>
+      Lives: <span id="lives">3</span>
+    </div>
+
+    <div>
+      Level: <span id="level">1</span>
+    </div>
+  </div>
+
+  <div id="game">
+
+    <div id="player"></div>
+
+    <div id="gameOver">
+
+      <h2>GAME OVER</h2>
+
+      <p>
+        Final Score:
+        <strong id="finalScore">0</strong>
+      </p>
+
+      <button onclick="restartGame()">
+        Play Again
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="controls">
+    ⬅️ Use <strong>Arrow Keys</strong> or <strong>A / D</strong>
+    to move
+  </div>
+
+  <div class="buttons">
+    <button onclick="moveLeft()">⬅️ Left</button>
+    <button onclick="restartGame()">🔄 Restart</button>
+    <button onclick="moveRight()">Right ➡️</button>
+  </div>
+
+</div>
+
+
+<script>
+
+  /* =====================================
+     GAME VARIABLES
+  ===================================== */
+
+  const game = document.getElementById("game");
+  const player = document.getElementById("player");
+
+  const scoreElement =
+    document.getElementById("score");
+
+  const livesElement =
+    document.getElementById("lives");
+
+  const levelElement =
+    document.getElementById("level");
+
+  const gameOverScreen =
+    document.getElementById("gameOver");
+
+  const finalScore =
+    document.getElementById("finalScore");
+
+
+  let score = 0;
+  let lives = 3;
+  let level = 1;
+
+  let playerX = 50;
+
+  let gameRunning = true;
+
+  let fallingObjects = [];
+
+  let spawnTimer;
+
+  let gameLoop;
+
+
+/* =====================================
+   STARS
+===================================== */
+
+function createStars() {
+
+  for (let i = 0; i < 80; i++) {
+
+    const star =
+      document.createElement("div");
+
+    star.className = "star";
+
+    star.style.left =
+      Math.random() * 100 + "%";
+
+    star.style.top =
+      Math.random() * 90 + "%";
+
+    star.style.opacity =
+      Math.random();
+
+    game.appendChild(star);
+
+  }
+
+}
+
+
+/* =====================================
+   PLAYER MOVEMENT
+===================================== */
+
+function updatePlayer() {
+
+  playerX =
+    Math.max(7, Math.min(93, playerX));
+
+  player.style.left =
+    playerX + "%";
+
+}
+
+
+function moveLeft() {
+
+  if (!gameRunning) return;
+
+  playerX -= 6;
+
+  updatePlayer();
+
+}
+
+
+function moveRight() {
+
+  if (!gameRunning) return;
+
+  playerX += 6;
+
+  updatePlayer();
+
+}
+
+
+/* =====================================
+   KEYBOARD
+===================================== */
+
+document.addEventListener("keydown", function(event) {
+
+  if (
+    event.key === "ArrowLeft" ||
+    event.key.toLowerCase() === "a"
+  ) {
+
+    moveLeft();
+
+  }
+
+  if (
+    event.key === "ArrowRight" ||
+    event.key.toLowerCase() === "d"
+  ) {
+
+    moveRight();
+
+  }
+
+});
+
+
+/* =====================================
+   CREATE OBJECT
+===================================== */
+
+function createObject() {
+
+  if (!gameRunning) return;
+
+
+  const object =
+    document.createElement("div");
+
+
+  const isBomb =
+    Math.random() < 0.20;
+
+
+  object.className =
+    isBomb ? "bomb" : "coin";
+
+
+  const x =
+    Math.random() * 92;
+
+
+  object.style.left =
+    x + "%";
+
+  object.style.top =
+    "-35px";
+
+
+  game.appendChild(object);
+
+
+  fallingObjects.push({
+
+    element: object,
+
+    x: x,
+
+    y: -35,
+
+    type: isBomb ? "bomb" : "coin",
+
+    speed: 2 + level * 0.5
+
+  });
+
+}
+
+
+/* =====================================
+   COLLISION DETECTION
+===================================== */
+
+function checkCollision(object) {
+
+  const playerRect =
+    player.getBoundingClientRect();
+
+  const objectRect =
+    object.element.getBoundingClientRect();
+
+
+  return !(
+    playerRect.right < objectRect.left ||
+    playerRect.left > objectRect.right ||
+    playerRect.bottom < objectRect.top ||
+    playerRect.top > objectRect.bottom
+  );
+
+}
+
+
+/* =====================================
+   GAME LOOP
+===================================== */
+
+function updateGame() {
+
+  if (!gameRunning) return;
+
+
+  fallingObjects.forEach((object, index) => {
+
+    object.y += object.speed;
+
+    object.element.style.top =
+      object.y + "px";
+
+
+    /* Collision */
+
+    if (checkCollision(object)) {
+
+      if (object.type === "coin") {
+
+        score += 10;
+
+        updateScore();
+
+      } else {
+
+        lives--;
+
+        updateLives();
+
+      }
+
+
+      object.element.remove();
+
+      fallingObjects.splice(index, 1);
+
+
+      if (lives <= 0) {
+
+        endGame();
+
+      }
+
+    }
+
+
+    /* Object reached bottom */
+
+    else if (
+      object.y >
+      game.clientHeight
+    ) {
+
+      if (object.type === "coin") {
+
+        lives--;
+
+        updateLives();
+
+      }
+
+
+      object.element.remove();
+
+      fallingObjects.splice(index, 1);
+
+
+      if (lives <= 0) {
+
+        endGame();
+
+      }
+
+    }
+
+  });
+
+
+  /* Increase level */
+
+  const newLevel =
+    Math.floor(score / 100) + 1;
+
+
+  if (newLevel !== level) {
+
+    level = newLevel;
+
+    levelElement.textContent =
+      level;
+
+  }
+
+}
+
+
+/* =====================================
+   UI
+===================================== */
+
+function updateScore() {
+
+  scoreElement.textContent =
+    score;
+
+}
+
+
+function updateLives() {
+
+  livesElement.textContent =
+    lives;
+
+}
+
+
+/* =====================================
+   SPAWN
+===================================== */
+
+function startSpawning() {
+
+  spawnTimer =
+    setInterval(() => {
+
+      createObject();
+
+    }, 850);
+
+}
+
+
+/* =====================================
+   GAME OVER
+===================================== */
+
+function endGame() {
+
+  gameRunning = false;
+
+  clearInterval(spawnTimer);
+
+  finalScore.textContent =
+    score;
+
+  gameOverScreen.style.display =
+    "flex";
+
+}
+
+
+/* =====================================
+   RESTART
+===================================== */
+
+function restartGame() {
+
+  clearInterval(spawnTimer);
+
+
+  fallingObjects.forEach(object => {
+
+    object.element.remove();
+
+  });
+
+
+  fallingObjects = [];
+
+
+  score = 0;
+  lives = 3;
+  level = 1;
+  playerX = 50;
+
+  gameRunning = true;
+
+
+  updateScore();
+  updateLives();
+
+  levelElement.textContent =
+    level;
+
+  updatePlayer();
+
+
+  gameOverScreen.style.display =
+    "none";
+
+
+  startSpawning();
+
+}
+
+
+/* =====================================
+   START GAME
+===================================== */
+
+createStars();
+
+updatePlayer();
+
+startSpawning();
+
+gameLoop =
+  setInterval(updateGame, 20);
+
+</script>
+
+</body>
+</html>
